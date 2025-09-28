@@ -6,7 +6,9 @@
  * @returns {string}
  */
 const getCellValue = (row, col) => {
-  return row.cells[col].textContent.trim() ?? '';
+  const cell = row.cells[col];
+
+  return cell ? cell.textContent.trim() : '';
 };
 
 /**
@@ -25,27 +27,34 @@ const toNumberIfPossible = (value) => {
   return isNaN(number) ? value : number;
 };
 
-const constructors = document.querySelectorAll('th');
-const constructorList = [...constructors];
+document.addEventListener('DOMContentLoaded', () => {
+  const constructors = document.querySelectorAll('th');
+  const constructorList = [...constructors];
 
-constructorList.forEach((element) => {
-  element.addEventListener('click', () => {
-    const tbody = document.querySelector('tbody');
-    const rows = [...tbody.rows];
-    const col = element.cellIndex;
+  constructorList.forEach((element) => {
+    element.addEventListener('click', () => {
+      const tbody = document.querySelector('tbody');
 
-    rows.sort((rowA, rowB) => {
-      const valueA = toNumberIfPossible(getCellValue(rowA, col));
-      const valueB = toNumberIfPossible(getCellValue(rowB, col));
-
-      if (typeof valueA === 'number' && typeof valueB === 'number') {
-        return valueA - valueB;
+      if (!tbody) {
+        return;
       }
 
-      return String(valueA).localeCompare(String(valueB));
-    });
+      const rows = [...tbody.rows];
+      const col = element.cellIndex;
 
-    tbody.innerHTML = '';
-    rows.forEach((row) => tbody.appendChild(row));
+      rows.sort((rowA, rowB) => {
+        const valueA = toNumberIfPossible(getCellValue(rowA, col));
+        const valueB = toNumberIfPossible(getCellValue(rowB, col));
+
+        if (typeof valueA === 'number' && typeof valueB === 'number') {
+          return valueA - valueB;
+        }
+
+        return String(valueA).localeCompare(String(valueB));
+      });
+
+      tbody.innerHTML = '';
+      rows.forEach((row) => tbody.appendChild(row));
+    });
   });
 });
